@@ -6,6 +6,7 @@
 #include "mqttconnect.h"
 #include "systemdisplay.h"
 #include "topicplotter.h"
+#include "ui/param/param_viewer.h"
 #include <QMainWindow>
 
 namespace Ui {
@@ -29,6 +30,7 @@ private:
     MenuDisplay _md;
     TopicPlotter _tp;
     SystemDisplay _sd;
+    ParamViewer _pw;
 };
 
 #endif // MAINWINDOW_H

@@ -37,6 +37,7 @@ SOURCES += \
         src/ui/logdisplay.cpp \
         src/ui/mainwindow.cpp \
         src/ui/menudisplay.cpp \
+        src/ui/param/param_viewer.cpp \
         src/ui/systemdisplay.cpp \
         src/ui/topicplotter.cpp
 
@@ -53,6 +54,7 @@ HEADERS += \
         src/ui/logdisplay.h \
         src/ui/mainwindow.h \
         src/ui/menudisplay.h \
+        src/ui/param/param_viewer.h \
         src/ui/systemdisplay.h \
         src/ui/topicplotter.h
 
@@ -61,6 +63,7 @@ FORMS += \
         src/ui/logdisplay.ui \
         src/ui/mainwindow.ui \
         src/ui/menudisplay.ui \
+        src/ui/param/param_viewer.ui \
         src/ui/systemdisplay.ui \
         src/ui/topicplotter.ui
 

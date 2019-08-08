@@ -12,10 +12,12 @@ MainWindow::MainWindow(QWidget* parent)
     , _md(_mqtt)
     , _tp(_mqtt, "sam/myoband/acc")
     , _sd(_mqtt)
+    , _pw(_mqtt)
 {
     ui->setupUi(this);
     ui->verticalLayout->insertWidget(0, &_mc);
-    ui->verticalLayout->addWidget(&_ld);
+    ui->horizontalLayout_bottom->addWidget(&_ld);
+    ui->horizontalLayout_bottom->addWidget(&_pw);
     ui->horizontalLayout->addWidget(&_md);
     ui->horizontalLayout->addWidget(&_tp);
 
@@ -24,6 +26,9 @@ MainWindow::MainWindow(QWidget* parent)
 
     ui->horizontalLayout->setStretch(0, 2);
     ui->horizontalLayout->setStretch(1, 5);
+
+    ui->horizontalLayout_bottom->setStretch(0, 7);
+    ui->horizontalLayout_bottom->setStretch(1, 3);
 
     ui->statusBar->addPermanentWidget(&_sd);
     setWindowTitle("SAM Monitoring");
