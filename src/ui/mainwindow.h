@@ -3,6 +3,8 @@
 
 #include "logdisplay.h"
 #include "menudisplay.h"
+#include "mqttconnect.h"
+#include "systemdisplay.h"
 #include "topicplotter.h"
 #include <QMainWindow>
 
@@ -19,12 +21,14 @@ public:
 
 private:
     Ui::MainWindow* ui;
+
+    MqttClientWrapper _mqtt;
+
+    MqttConnect _mc;
     LogDisplay _ld;
     MenuDisplay _md;
     TopicPlotter _tp;
-
-private slots:
-    void setup();
+    SystemDisplay _sd;
 };
 
 #endif // MAINWINDOW_H

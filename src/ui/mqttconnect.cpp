@@ -1,13 +1,17 @@
 #include "mqttconnect.h"
 #include "ui_mqttconnect.h"
 
-MqttConnect::MqttConnect(QWidget* parent)
+MqttConnect::MqttConnect(MqttClientWrapper& mqtt, QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::MqttConnect)
+    , _mqtt(mqtt)
 {
     ui->setupUi(this);
     QObject::connect(ui->pushButton_connect, &QPushButton::clicked, this, &MqttConnect::button_callback);
-    QObject::connect(&MqttClient::instance(), &QMqttClient::stateChanged, this, &MqttConnect::mqtt_state_callback);
+    QObject::connect(&_timer, &QTimer::timeout, this, &MqttConnect::timer_callback);
+
+    _timer.setInterval(1000);
+    _timer.start();
 }
 
 MqttConnect::~MqttConnect()
@@ -17,23 +21,16 @@ MqttConnect::~MqttConnect()
 
 void MqttConnect::button_callback()
 {
-    MqttClient::instance().connect_to_host(ui->lineEdit_hostname->text(), 1883);
+    _mqtt.Client::connect(ui->lineEdit_hostname->text().toStdString(), 1883);
 }
 
-void MqttConnect::mqtt_state_callback(QMqttClient::ClientState state)
+void MqttConnect::timer_callback()
 {
-    switch (state) {
-    case QMqttClient::Connected:
+    if (_mqtt.connected()) {
         ui->pushButton_connect->setText("Connected");
         ui->pushButton_connect->setEnabled(false);
-        break;
-    case QMqttClient::Connecting:
-        ui->pushButton_connect->setText("Connecting");
-        ui->pushButton_connect->setEnabled(false);
-        break;
-    default:
+    } else {
         ui->pushButton_connect->setText("Connect");
         ui->pushButton_connect->setEnabled(true);
-        break;
     }
 }

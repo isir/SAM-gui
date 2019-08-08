@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui mqtt charts
+QT       += core gui charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -22,26 +22,39 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-CONFIG += c++11
+CONFIG += c++1z
 
 SOURCES += \
+        src/ui/mosquittopp/client.cpp \
+        src/ui/mosquittopp/connect_factory.cpp \
+        src/ui/mosquittopp/connect_helper.cpp \
+        src/ui/mosquittopp/library_wrapper.cpp \
+        src/ui/mosquittopp/message.cpp \
+        src/ui/mosquittopp/subscription.cpp \
+        src/ui/mqtt_client_wrapper.cpp \
         src/ui/mqttconnect.cpp \
         src/main.cpp \
         src/ui/logdisplay.cpp \
         src/ui/mainwindow.cpp \
         src/ui/menudisplay.cpp \
         src/ui/systemdisplay.cpp \
-        src/ui/topicplotter.cpp \
-        src/utils/mqttclient.cpp
+        src/ui/topicplotter.cpp
 
 HEADERS += \
+        src/ui/mosquittopp/client.h \
+        src/ui/mosquittopp/connect_factory.h \
+        src/ui/mosquittopp/connect_helper.h \
+        src/ui/mosquittopp/library_version.h \
+        src/ui/mosquittopp/library_wrapper.h \
+        src/ui/mosquittopp/message.h \
+        src/ui/mosquittopp/subscription.h \
+        src/ui/mqtt_client_wrapper.h \
         src/ui/mqttconnect.h \
         src/ui/logdisplay.h \
         src/ui/mainwindow.h \
         src/ui/menudisplay.h \
         src/ui/systemdisplay.h \
-        src/ui/topicplotter.h \
-        src/utils/mqttclient.h
+        src/ui/topicplotter.h
 
 FORMS += \
         src/ui/mqttconnect.ui \
@@ -52,6 +65,8 @@ FORMS += \
         src/ui/topicplotter.ui
 
 INCLUDEPATH += "src/"
+
+LIBS += -lmosquitto
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

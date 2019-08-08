@@ -1,15 +1,16 @@
 #include "menudisplay.h"
 #include "ui_menudisplay.h"
 
-MenuDisplay::MenuDisplay(QWidget* parent)
+MenuDisplay::MenuDisplay(MqttClientWrapper& mqtt, QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::MenuDisplay)
-    , _mqtt(MqttClient::instance())
+    , _mqtt(mqtt)
 {
     ui->setupUi(this);
-    QObject::connect(&_mqtt, &QMqttClient::connected, this, &MenuDisplay::setup);
     QObject::connect(ui->pushButton_send, &QPushButton::pressed, this, &MenuDisplay::send_callback);
     QObject::connect(ui->lineEdit_command, &QLineEdit::returnPressed, this, &MenuDisplay::send_callback);
+
+    QObject::connect(&_mqtt, &MqttClientWrapper::mqtt_connected, this, &MenuDisplay::setup);
 }
 
 MenuDisplay::~MenuDisplay()
@@ -19,18 +20,18 @@ MenuDisplay::~MenuDisplay()
 
 void MenuDisplay::setup()
 {
-    QMqttSubscription* sub = _mqtt.subscribe(QString("sam/menu/output"));
-    QObject::connect(sub, &QMqttSubscription::messageReceived, this, &MenuDisplay::mqtt_message_callback);
+    auto sub = _mqtt.subscribe("sam/menu/output");
+    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &MenuDisplay::mqtt_message_callback);
+}
+
+void MenuDisplay::mqtt_message_callback(Mosquittopp::Message msg)
+{
+    ui->textEdit_menu->clear();
+    ui->textEdit_menu->append(QString::fromStdString(msg.payload()));
 }
 
 void MenuDisplay::send_callback()
 {
-    _mqtt.publish(QString("sam/menu/input"), ui->lineEdit_command->text().toLatin1());
+    _mqtt.publish("sam/menu/input", ui->lineEdit_command->text().toStdString());
     ui->lineEdit_command->clear();
-}
-
-void MenuDisplay::mqtt_message_callback(QMqttMessage msg)
-{
-    ui->textEdit_menu->clear();
-    ui->textEdit_menu->append(msg.payload());
 }

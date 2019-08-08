@@ -3,11 +3,11 @@
 #include <QVBoxLayout>
 #include <QtCharts/QLegendMarker>
 
-TopicPlotter::TopicPlotter(QString topic_name, QWidget* parent)
+TopicPlotter::TopicPlotter(MqttClientWrapper& mqtt, QString topic_name, QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::TopicPlotter)
+    , _mqtt(mqtt)
     , _topic_name(topic_name)
-    , _sub(nullptr)
     , _chart(new QtCharts::QChart())
     , _chartview(_chart)
     , _max_size(100)
@@ -22,7 +22,8 @@ TopicPlotter::TopicPlotter(QString topic_name, QWidget* parent)
     _chart->addAxis(&_x_axis, Qt::AlignBottom);
     _chart->addAxis(&_y_axis, Qt::AlignRight);
 
-    QObject::connect(&MqttClient::instance(), &QMqttClient::connected, this, &TopicPlotter::setup);
+    QObject::connect(&_mqtt, &MqttClientWrapper::mqtt_connected, this, &TopicPlotter::enable);
+    QObject::connect(&_mqtt, &MqttClientWrapper::mqtt_disconnected, this, &TopicPlotter::disable);
 }
 
 TopicPlotter::~TopicPlotter()
@@ -34,28 +35,23 @@ TopicPlotter::~TopicPlotter()
     }
 }
 
-void TopicPlotter::setup()
-{
-    _sub = MqttClient::instance().subscribe(_topic_name);
-}
-
 void TopicPlotter::enable()
 {
-    if (_sub)
-        QObject::connect(_sub, &QMqttSubscription::messageReceived, this, &TopicPlotter::mqtt_callback);
+    auto sub = _mqtt.subscribe(_topic_name.toStdString());
+    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &TopicPlotter::mqtt_callback);
 }
 
 void TopicPlotter::disable()
 {
-    if (_sub)
-        QObject::disconnect(_sub, &QMqttSubscription::messageReceived, this, &TopicPlotter::mqtt_callback);
+    auto sub = _mqtt.subscribe(_topic_name.toStdString());
+    QObject::disconnect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &TopicPlotter::mqtt_callback);
 }
 
-void TopicPlotter::mqtt_callback(QMqttMessage msg)
+void TopicPlotter::mqtt_callback(Mosquittopp::Message msg)
 {
     static int idx = -1;
 
-    QStringList payload = QString(msg.payload()).split(' ', QString::SkipEmptyParts);
+    QStringList payload = QString::fromStdString(msg.payload()).split(' ', QString::SkipEmptyParts);
 
     if (_series.isEmpty()) {
         for (int i = 0; i < payload.size(); ++i) {

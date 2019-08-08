@@ -7,10 +7,14 @@
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , _tp("sam/myoband/acc")
+    , _mc(_mqtt)
+    , _ld(_mqtt)
+    , _md(_mqtt)
+    , _tp(_mqtt, "sam/myoband/acc")
+    , _sd(_mqtt)
 {
     ui->setupUi(this);
-    ui->verticalLayout->insertWidget(0, new MqttConnect());
+    ui->verticalLayout->insertWidget(0, &_mc);
     ui->verticalLayout->addWidget(&_ld);
     ui->horizontalLayout->addWidget(&_md);
     ui->horizontalLayout->addWidget(&_tp);
@@ -21,18 +25,11 @@ MainWindow::MainWindow(QWidget* parent)
     ui->horizontalLayout->setStretch(0, 2);
     ui->horizontalLayout->setStretch(1, 5);
 
-    ui->statusBar->addPermanentWidget(new SystemDisplay());
+    ui->statusBar->addPermanentWidget(&_sd);
     setWindowTitle("SAM Monitoring");
-
-    QObject::connect(&MqttClient::instance(), &QMqttClient::connected, this, &MainWindow::setup);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::setup()
-{
-    _tp.enable();
 }

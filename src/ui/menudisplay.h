@@ -1,7 +1,7 @@
 #ifndef MENUDISPLAY_H
 #define MENUDISPLAY_H
 
-#include "utils/mqttclient.h"
+#include "mqtt_client_wrapper.h"
 #include <QWidget>
 
 namespace Ui {
@@ -12,19 +12,20 @@ class MenuDisplay : public QWidget {
     Q_OBJECT
 
 public:
-    explicit MenuDisplay(QWidget* parent = nullptr);
+    explicit MenuDisplay(MqttClientWrapper& mqtt, QWidget* parent = nullptr);
     ~MenuDisplay();
 
 public slots:
     void setup();
 
 private:
+    void mqtt_message_callback(Mosquittopp::Message msg);
+
     Ui::MenuDisplay* ui;
-    MqttClient& _mqtt;
+    MqttClientWrapper& _mqtt;
 
 private slots:
     void send_callback();
-    void mqtt_message_callback(QMqttMessage msg);
 };
 
 #endif // MENUDISPLAY_H
