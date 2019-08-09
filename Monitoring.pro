@@ -31,6 +31,7 @@ SOURCES += \
         src/ui/mosquittopp/library_wrapper.cpp \
         src/ui/mosquittopp/message.cpp \
         src/ui/mosquittopp/subscription.cpp \
+        src/ui/mosquittopp/subscription_factory.cpp \
         src/ui/mqtt_client_wrapper.cpp \
         src/ui/mqttconnect.cpp \
         src/main.cpp \
@@ -49,6 +50,7 @@ HEADERS += \
         src/ui/mosquittopp/library_wrapper.h \
         src/ui/mosquittopp/message.h \
         src/ui/mosquittopp/subscription.h \
+        src/ui/mosquittopp/subscription_factory.h \
         src/ui/mqtt_client_wrapper.h \
         src/ui/mqttconnect.h \
         src/ui/logdisplay.h \
