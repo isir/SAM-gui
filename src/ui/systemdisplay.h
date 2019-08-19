@@ -17,8 +17,11 @@ public:
     explicit SystemDisplay(MqttClientWrapper& mqtt, QWidget* parent = nullptr);
     ~SystemDisplay();
 
-public slots:
+private slots:
     void setup();
+
+    void mqtt_callback_load(Mosquittopp::Message msg);
+    void mqtt_callback_temp(Mosquittopp::Message msg);
 
 private:
     Ui::SystemDisplay* ui;

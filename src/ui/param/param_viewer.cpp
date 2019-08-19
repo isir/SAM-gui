@@ -20,7 +20,7 @@ ParamViewer::~ParamViewer()
 void ParamViewer::setup()
 {
     auto sub = _mqtt.subscribe("param/sam/#");
-    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &ParamViewer::mqtt_message_callback);
+    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &ParamViewer::mqtt_message_callback, Qt::QueuedConnection);
 }
 
 void ParamViewer::mqtt_message_callback(Mosquittopp::Message msg)

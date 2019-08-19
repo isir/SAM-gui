@@ -21,7 +21,7 @@ MenuDisplay::~MenuDisplay()
 void MenuDisplay::setup()
 {
     auto sub = _mqtt.subscribe("sam/menu/output");
-    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &MenuDisplay::mqtt_message_callback);
+    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &MenuDisplay::mqtt_message_callback, Qt::QueuedConnection);
 }
 
 void MenuDisplay::mqtt_message_callback(Mosquittopp::Message msg)

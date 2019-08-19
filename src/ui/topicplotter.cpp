@@ -39,7 +39,7 @@ void TopicPlotter::enable()
 {
     if (_mqtt.connected()) {
         auto sub = _mqtt.subscribe(_topic_name.toStdString());
-        QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &TopicPlotter::mqtt_callback);
+        QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &TopicPlotter::mqtt_callback, Qt::QueuedConnection);
     }
 }
 

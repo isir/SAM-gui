@@ -23,9 +23,21 @@ SystemDisplay::~SystemDisplay()
 void SystemDisplay::setup()
 {
     auto sub = _mqtt.subscribe("system/cpu_load");
-    for (unsigned int i = 0; i < 4; ++i) {
-        QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, [this, i](Mosquittopp::Message msg) { _pbs[i]->setValue(100 * (QString::fromStdString(msg.payload()).split(' ', QString::SkipEmptyParts)).at(i + 1).toDouble()); });
-    }
+    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &SystemDisplay::mqtt_callback_load, Qt::QueuedConnection);
+
     sub = _mqtt.subscribe("system/cpu_temp");
-    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, [this](Mosquittopp::Message msg) { ui->label_cpu_temp->setText(QString::number(std::stoi(msg.payload()) / 1000) + "°C"); });
+    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &SystemDisplay::mqtt_callback_temp, Qt::QueuedConnection);
+}
+
+void SystemDisplay::mqtt_callback_load(Mosquittopp::Message msg)
+{
+    QStringList sl = QString::fromStdString(msg.payload()).split(' ', QString::SkipEmptyParts);
+    for (int i = 0; i < 4; ++i) {
+        _pbs[i]->setValue(100 * (sl.at(i + 1).toDouble()));
+    }
+}
+
+void SystemDisplay::mqtt_callback_temp(Mosquittopp::Message msg)
+{
+    ui->label_cpu_temp->setText(QString::number(std::stoi(msg.payload()) / 1000) + "°C");
 }
