@@ -8,6 +8,7 @@ MqttConnect::MqttConnect(MqttClientWrapper& mqtt, QWidget* parent)
 {
     ui->setupUi(this);
     QObject::connect(ui->pushButton_connect, &QPushButton::clicked, this, &MqttConnect::button_callback);
+    QObject::connect(ui->lineEdit_hostname, &QLineEdit::returnPressed, this, &MqttConnect::button_callback);
     QObject::connect(&_timer, &QTimer::timeout, this, &MqttConnect::timer_callback);
 
     _timer.setInterval(1000);
