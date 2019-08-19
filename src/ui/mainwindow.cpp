@@ -15,9 +15,15 @@ MainWindow::MainWindow(QWidget* parent)
     , _pw(_mqtt)
 {
     ui->setupUi(this);
+
+    auto scrollArea = new QScrollArea;
+    scrollArea->setBackgroundRole(QPalette::Dark);
+    scrollArea->setWidget(&_pw);
+    scrollArea->setWidgetResizable(true);
+
     ui->verticalLayout->insertWidget(0, &_mc);
     ui->horizontalLayout_bottom->addWidget(&_ld);
-    ui->horizontalLayout_bottom->addWidget(&_pw);
+    ui->horizontalLayout_bottom->addWidget(scrollArea);
     ui->horizontalLayout->addWidget(&_md);
     ui->horizontalLayout->addWidget(&_tp);
 
