@@ -37,14 +37,18 @@ TopicPlotter::~TopicPlotter()
 
 void TopicPlotter::enable()
 {
-    auto sub = _mqtt.subscribe(_topic_name.toStdString());
-    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &TopicPlotter::mqtt_callback);
+    if (_mqtt.connected()) {
+        auto sub = _mqtt.subscribe(_topic_name.toStdString());
+        QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &TopicPlotter::mqtt_callback);
+    }
 }
 
 void TopicPlotter::disable()
 {
-    auto sub = _mqtt.subscribe(_topic_name.toStdString());
-    QObject::disconnect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &TopicPlotter::mqtt_callback);
+    if (_mqtt.connected()) {
+        auto sub = _mqtt.subscribe(_topic_name.toStdString());
+        QObject::disconnect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &TopicPlotter::mqtt_callback);
+    }
 }
 
 void TopicPlotter::mqtt_callback(Mosquittopp::Message msg)
