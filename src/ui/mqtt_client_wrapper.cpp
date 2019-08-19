@@ -10,7 +10,7 @@ MqttClientWrapper::MqttClientWrapper(QObject* parent)
     : QObject(parent)
 {
     QObject::connect(&_timer, &QTimer::timeout, this, &MqttClientWrapper::timer_callback);
-    _timer.start(500);
+    _timer.start(100);
 }
 
 std::shared_ptr<MqttSubscriptionWrapper> MqttClientWrapper::subscribe(std::string pattern, QOS qos)
