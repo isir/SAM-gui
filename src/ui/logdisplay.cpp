@@ -26,7 +26,7 @@ LogDisplay::~LogDisplay()
 void LogDisplay::setup()
 {
     auto sub = _mqtt.subscribe("sam/log/#");
-    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &LogDisplay::mqtt_message_callback);
+    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &LogDisplay::mqtt_message_callback, Qt::QueuedConnection);
 }
 
 void LogDisplay::display_message(Mosquittopp::Message msg)
