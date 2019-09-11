@@ -26,11 +26,10 @@ std::shared_ptr<MqttSubscriptionWrapper> MqttClientWrapper::subscribe(std::strin
 
 void MqttClientWrapper::timer_callback()
 {
-    static bool status = false;
-    if (connected() && status == false) {
+    if (connected() && _status == false) {
         emit mqtt_connected();
-    } else if (!connected() && status == true) {
+    } else if (!connected() && _status == true) {
         emit mqtt_disconnected();
     }
-    status = connected();
+    _status = connected();
 }

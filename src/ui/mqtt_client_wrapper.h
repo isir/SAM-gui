@@ -30,6 +30,7 @@ public:
 private:
     QTimer _timer;
     QMap<std::string, std::shared_ptr<MqttSubscriptionWrapper>> _subs;
+    bool _status = false;
 
 private slots:
     void timer_callback();
