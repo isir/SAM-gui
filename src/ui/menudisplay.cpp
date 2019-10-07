@@ -32,6 +32,6 @@ void MenuDisplay::mqtt_message_callback(Mosquittopp::Message msg)
 
 void MenuDisplay::send_callback()
 {
-    _mqtt.publish("sam/menu/input", ui->lineEdit_command->text().toStdString());
+    _mqtt.publish("sam/menu/input", ui->lineEdit_command->text().toStdString(), MqttClientWrapper::QoS2);
     ui->lineEdit_command->clear();
 }
