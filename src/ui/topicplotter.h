@@ -1,7 +1,7 @@
 #ifndef TOPICPLOTTER_H
 #define TOPICPLOTTER_H
 
-#include "utils/mqttclient.h"
+#include "mqtt_client_wrapper.h"
 #include <QWidget>
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
@@ -16,20 +16,21 @@ class TopicPlotter : public QWidget {
     Q_OBJECT
 
 public:
-    explicit TopicPlotter(QString topic_name, QWidget* parent = nullptr);
+    explicit TopicPlotter(MqttClientWrapper& mqtt, QString topic_name, QWidget* parent = nullptr);
     ~TopicPlotter();
-
-    void setup();
 
 public slots:
     void enable();
     void disable();
 
 private:
+    void mqtt_callback(Mosquittopp::Message msg);
+
     Ui::TopicPlotter* ui;
 
+    MqttClientWrapper& _mqtt;
+
     QString _topic_name;
-    QMqttSubscription* _sub;
 
     QtCharts::QChart* _chart;
     QtCharts::QChartView _chartview;
@@ -42,7 +43,6 @@ private:
     const int _max_size;
 
 private slots:
-    void mqtt_callback(QMqttMessage msg);
     void marker_clicked_callback();
 };
 

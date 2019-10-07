@@ -1,7 +1,7 @@
 #ifndef LOGDISPLAY_H
 #define LOGDISPLAY_H
 
-#include "utils/mqttclient.h"
+#include "mqtt_client_wrapper.h"
 #include <QList>
 #include <QWidget>
 
@@ -13,22 +13,22 @@ class LogDisplay : public QWidget {
     Q_OBJECT
 
 public:
-    explicit LogDisplay(QWidget* parent = nullptr);
+    explicit LogDisplay(MqttClientWrapper& mqtt, QWidget* parent = nullptr);
     ~LogDisplay();
 
 public slots:
     void setup();
 
 private:
-    void display_message(QMqttMessage msg);
+    void display_message(Mosquittopp::Message msg);
+    void mqtt_message_callback(Mosquittopp::Message msg);
 
     Ui::LogDisplay* ui;
-    MqttClient& _mqtt;
-    QList<QMqttMessage> _messages;
+    MqttClientWrapper& _mqtt;
+    QList<Mosquittopp::Message> _messages;
 
 private slots:
     void refresh();
-    void mqtt_message_callback(QMqttMessage msg);
 };
 
 #endif // LOGDISPLAY_H

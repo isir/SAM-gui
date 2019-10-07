@@ -1,10 +1,10 @@
 #include "systemdisplay.h"
 #include "ui_systemdisplay.h"
-#include "utils/mqttclient.h"
 
-SystemDisplay::SystemDisplay(QWidget* parent)
+SystemDisplay::SystemDisplay(MqttClientWrapper& mqtt, QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::SystemDisplay)
+    , _mqtt(mqtt)
 {
     ui->setupUi(this);
     _pbs.push_back(ui->progressBar_cpu0);
@@ -12,7 +12,7 @@ SystemDisplay::SystemDisplay(QWidget* parent)
     _pbs.push_back(ui->progressBar_cpu2);
     _pbs.push_back(ui->progressBar_cpu3);
 
-    QObject::connect(&MqttClient::instance(), &QMqttClient::connected, this, &SystemDisplay::setup);
+    QObject::connect(&_mqtt, &MqttClientWrapper::mqtt_connected, this, &SystemDisplay::setup);
 }
 
 SystemDisplay::~SystemDisplay()
@@ -22,10 +22,22 @@ SystemDisplay::~SystemDisplay()
 
 void SystemDisplay::setup()
 {
-    QMqttSubscription* sub = MqttClient::instance().subscribe(QString("system/cpu_load"));
-    for (unsigned int i = 0; i < 4; ++i) {
-        QObject::connect(sub, &QMqttSubscription::messageReceived, [this, i](QMqttMessage msg) { _pbs[i]->setValue(100 * (QString(msg.payload()).split(' ', QString::SkipEmptyParts)).at(i + 1).toDouble()); });
+    auto sub = _mqtt.subscribe("system/cpu_load");
+    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &SystemDisplay::mqtt_callback_load, Qt::QueuedConnection);
+
+    sub = _mqtt.subscribe("system/cpu_temp");
+    QObject::connect(sub.get(), &MqttSubscriptionWrapper::message_received, this, &SystemDisplay::mqtt_callback_temp, Qt::QueuedConnection);
+}
+
+void SystemDisplay::mqtt_callback_load(Mosquittopp::Message msg)
+{
+    QStringList sl = QString::fromStdString(msg.payload()).split(' ', QString::SkipEmptyParts);
+    for (int i = 0; i < 4; ++i) {
+        _pbs[i]->setValue(100 * (sl.at(i + 1).toDouble()));
     }
-    sub = MqttClient::instance().subscribe(QString("system/cpu_temp"));
-    QObject::connect(sub, &QMqttSubscription::messageReceived, [this](QMqttMessage msg) { ui->label_cpu_temp->setText(QString::number(msg.payload().toInt() / 1000) + "°C"); });
+}
+
+void SystemDisplay::mqtt_callback_temp(Mosquittopp::Message msg)
+{
+    ui->label_cpu_temp->setText(QString::fromStdString(msg.payload()));
 }
