@@ -30,8 +30,6 @@ void ParamViewer::mqtt_message_callback(Mosquittopp::Message msg)
 
 void ParamViewer::insert_from_topic_and_value(QString topic, QString value)
 {
-    QObject::disconnect(_con[topic]);
-
     int cnt = ui->formLayout->rowCount();
     qDebug() << topic << value << cnt;
 
@@ -41,7 +39,8 @@ void ParamViewer::insert_from_topic_and_value(QString topic, QString value)
     }
 
     auto edit = new QLineEdit(value);
-    _con[topic] = QObject::connect(edit, &QLineEdit::textEdited, [this, topic](QString text) { _mqtt.publish(topic.toStdString(), text.toStdString()); });
+    if (!_con.contains(topic))
+        _con[topic] = QObject::connect(edit, &QLineEdit::textEdited, [this, topic](QString text) { _mqtt.publish(topic.toStdString(), text.toStdString()); });
     _form_entries.insert(topic, edit);
     ui->formLayout->addRow(topic, edit);
 }
