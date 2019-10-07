@@ -40,7 +40,7 @@ void ParamViewer::insert_from_topic_and_value(QString topic, QString value)
 
     auto edit = new QLineEdit(value);
     if (!_con.contains(topic))
-        _con[topic] = QObject::connect(edit, &QLineEdit::textEdited, [this, topic](QString text) { _mqtt.publish(topic.toStdString(), text.toStdString()); });
+        _con[topic] = QObject::connect(edit, &QLineEdit::textEdited, [this, topic](QString text) { _mqtt.publish(topic.toStdString(), text.toStdString(), Mosquittopp::Client::QoS1, true); });
     _form_entries.insert(topic, edit);
     ui->formLayout->addRow(topic, edit);
 }
