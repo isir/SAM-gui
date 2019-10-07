@@ -39,5 +39,5 @@ void SystemDisplay::mqtt_callback_load(Mosquittopp::Message msg)
 
 void SystemDisplay::mqtt_callback_temp(Mosquittopp::Message msg)
 {
-    ui->label_cpu_temp->setText(QString::number(std::stoi(msg.payload()) / 1000) + "°C");
+    ui->label_cpu_temp->setText(QString::fromStdString(msg.payload()));
 }
